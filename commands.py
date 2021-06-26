@@ -3,6 +3,16 @@ def next(years):
     return message
 
 
+def start():
+    message = "You've started the game!"
+    return message
+
+
+def initialize():
+    message = "You've initialized the game!"
+    return message
+
+
 def get_quote():
     response = requests.get("https://zenquotes.io/api/random")
     json_data = json.loads(response.text)

@@ -30,11 +30,10 @@ async def on_message(message):
         # placeholder of 10 years
         await message.channel.send(next(10))
 
-    # if message.content.startswith('$Start'):
-    #
-    #
-    # if message.content.startswith('$Initialize'):
+    if message.content.startswith('$Start'):
+        await message.channel.send(start())
 
-
+    if message.content.startswith('$Initialize'):
+        await message.channel.send(initialize())
 
 client.run(TOKEN)
