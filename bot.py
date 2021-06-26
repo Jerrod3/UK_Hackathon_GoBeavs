@@ -3,15 +3,12 @@ import requests
 import json
 import os
 from secrets import *
+from commands import *
 
 client = discord.Client()
 TOKEN = get_token()
 
-def get_quote():
-    response = requests.get("https://zenquotes.io/api/random")
-    json_data = json.loads(response.text)
-    quote = json_data[0]['q'] + " -" + json_data[0]['a']
-    return(quote)
+
 
 @client.event
 async def on_ready():
@@ -28,5 +25,16 @@ async def on_message(message):
     if message.content.startswith('$inspire'):
         quote = get_quote()
         await message.channel.send(quote)
+
+    if message.content.startswith('$Next'):
+        # placeholder of 10 years
+        await message.channel.send(next(10))
+
+    # if message.content.startswith('$Start'):
+    #
+    #
+    # if message.content.startswith('$Initialize'):
+
+
 
 client.run(TOKEN)
