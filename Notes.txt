@@ -1,0 +1,29 @@
+https://www.soa.org/resources/tables-calcs-tools/research-scenario/
+
+Notes on file names, corresponding asset classes, description, and example.
+Two asset classes, FIXED and BALANCED, are a mix of classes listed above,
+and could be removed(total of 7)
+
+Asset Class				                        Short Name	File
+Money Market / Short-Term 		                MONEY 		MONEY.csv
+U.S. Intermediate Term Government Bonds U.S.    ITGVT 	    INTGOV.csv
+U.S. Long Term Corporate Bonds U.S. 	        LTCORP 		LTCORP.csv
+Diversified Large Capitalized U.S. 	            Equity US 	US.csv
+Diversified International Equity 	            INT 		INT.csv
+Intermediate Risk Equity 		                SMALL 		SMALL.csv
+Aggressive or Specialized Equity 	            AGGR 		AGGR.csv
+
+Diversified Fixed Income 		                FIXED 		FIXED.csv
+Diversified Balanced Allocation 	            BALANCED 	BALANCED.csv
+
+Asset Class				                        Example
+Money Market 				                    3 Month Treasury returns
+U.S. ITGVT 				                        U.S. Intermediate Term Government Bonds
+U.S. LTCORP 				                    U.S. Long Term Corporate Bonds
+Diversified Large Cap U.S. Equity 	            S&P500 Total Return Index
+Diversified International Equity 	            MSCI-EAFE $USD Total Return Index
+Intermediate Risk Equity 		                U.S. Small Capitalization Index
+Aggressive Equity 			                    Emerging Markets, NASDAQ, Hang Seng
+
+Fixed Income 				                    65% ITGVT + 35% LTCORP
+Balanced  				                        60% Diversified Equity + 40% Fixed Income
