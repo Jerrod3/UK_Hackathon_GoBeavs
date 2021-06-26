@@ -1,1 +1,1 @@
-# here's main.py as made by Lucas
+# here's main.py as made by Lucas Jensen
