@@ -3,12 +3,12 @@
 # See examples at very bottom.
 
 VERY_GOOD_EVENTS = [
-    "Harvard economists are surprised by the positive economic growth following the latest Lady Gaga album inspired millions of consumers around the world to 'give back' during this pandemic."
+    "Harvard economists are surprised by the positive economic growth following the latest Lady Gaga album that inspired millions of consumers around the world to 'give back' during this pandemic."
 
 ]
 
 GOOD_EVENTS = [
-    "Immense quantity of gold dating back to 1800's was recently discovered in D.C. "
+    "Immense quantity of gold dating back to 1800's was recently discovered in D.C."
 
 ]
 
