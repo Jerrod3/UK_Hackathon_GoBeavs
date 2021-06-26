@@ -27,11 +27,12 @@ class player:                    #Each player has their own gameInstance object 
 
     ADMIN_LIST = {'Burbot#5573', 'ColdBrewOnNitroStat#4666', 'Lucas J#3567', '24karatsunshine#7559'} #List stored as Set, Set is pretty much better/efficient list if order does not matter.
     PORTFOLIO_PRESET = [
-        (0.05, 0.10, 0.10, 0.7, 0.8, 0.25, 0.10, 0.05, 0.15, 0.05), ## Portfolio 1
-        (0.05, 0.10, 0.10, 0.7, 0.8, 0.25, 0.10, 0.05, 0.15, 0.05), ## Portfolio 2 
-        (0.05, 0.10, 0.10, 0.7, 0.8, 0.25, 0.10, 0.05, 0.15, 0.05), ## Portfolio 3
-        (0.05, 0.10, 0.10, 0.7, 0.8, 0.25, 0.10, 0.05, 0.15, 0.05), ## Portfolio 4
-        (0.05, 0.10, 0.10, 0.7, 0.8, 0.25, 0.10, 0.05, 0.15, 0.05)  ## Portfolio 5
+        (0.05, 0.25, 0.25, 0.20, 0.10, 0.10, 0.05, 0.00, 0.00)  ## Portfolio 1 - A little bit of everything
+        (0.00, 0.00, 0.00, 0.34, 0.33, 0.00, 0.00, 0.33, 0.00)  ## Portfolio 2 - The Boglehead
+        (0.00, 0.00, 0.00, 0.25, 0.25, 0.25, 0.25, 0.00, 0.00)  ## Portfolio 3 - The Dave Ramsey
+        (0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 1.00)  ## Portfolio 4 - Old School Pension Plan
+        (0.00, 0.00, 0.00, 1.00, 0.00, 0.00, 0.00, 0.00, 0.00)  ## Portfolio 5 - You only live once
+        (1.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00)  ## Portfolio 6 - The Shoebox
     ]
 
     def __init__(self, name, age=18):        #__init__ is a object method that python automatically runs, when the instance/object is initialized/created
