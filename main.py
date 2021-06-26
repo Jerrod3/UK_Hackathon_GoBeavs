@@ -22,19 +22,28 @@
     #PrevDictionary (Balance, + 9 AssetTypes, Age) 
     #CurrDictionary (Balance, + 9 AssetTypes, Age)
 
+
 class player:                    #Each player has their own gameInstance object created when calling $start
+
+    ADMIN_LIST = {'Burbot#5573', 'ColdBrewOnNitroStat#4666', 'Lucas J#3567', '24karatsunshine#7559'} #List stored as Set, Set is pretty much better/efficient list if order does not matter.
+
     def __init__(self, name, age=18):        #__init__ is a object method that python automatically runs, when the instance/object is initialized/created
         self.user = name
         self.balanace = 100000            #Replace this with whatever the starting balance is.
         self.age = age    #By default, this will be 18 unelss the parameter is overwritten
 
-        self._current_assets = dict()      #Storing all of the player's data as key:pair dictionary format.
-        self._previous_assets = dict()
+        self._current_assets = dict()      #Storing all of the player's data as key:pair dictionary format. Setting to empty one to begin with.
+        self._previous_assets = dict()     #Storing all of the player's data as key:pair dictionary format. Setting to empty one to begin with.
+
+        self._is_admin = self._is_admin_check()
 
     def __repr__(self) -> str:       #__Repr__ is a method that tells python, what displays when you print or call the object directly.
         return self.user
 
-Jerrod = player('Burbot#5573')
+    def _is_admin_check(self):
+        return (self.user in ADMIN_LIST)
+
+Jerrod = player('Burbot#5573')          #We want the bot to execute this function ; creating the player's object using discord name when they type !start
 print(Jerrod)            #Returns -> 'Burbot#5573'
 print(Jerrod.balanace)   #Returns -> '100000'
 
