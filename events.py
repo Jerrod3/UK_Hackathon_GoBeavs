@@ -4,7 +4,7 @@
 
 VERY_GOOD_EVENTS = [
     "Harvard economists are surprised by the positive economic growth following the latest Lady Gaga album that inspired millions of consumers around the world to 'give back' during this pandemic."
-    "Pfizer announces they've invited a vaccine that will prevent all viruses from spreading"
+    "Pfizer announces they've invented a vaccine that will prevent all viruses from spreading"
     "90% of 1st world companies have opted for a 4 day work week, tripling economic production"
 ]
 
