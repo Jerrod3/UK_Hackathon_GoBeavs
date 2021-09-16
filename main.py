@@ -1,114 +1,121 @@
 # Discord Bot - Financial Portfolio Game
 
+# *** = implemented
 # Queries/Commands
-# $Next                             //Adds X amount of turns/years to the gameplay.
-# $Start                            //Resets and starts the game for player.
-# $Initialize                       //Initialize the bot/game on the server.
-# $Balance                          //Checks the current balance/cash the player has.
-# $Networth                         //Shows total allotted cash based on asset prices
-# $Age                              //Checks the age for the current player.
-# $Assets                           //Shows the ratio and breakdown of the players' assets.
+# $Next***                             //Adds X amount of _turns/years to the gameplay.
+# $Start***                            //Resets and starts the game for _player.
+# $Initialize***                       //Initialize the bot/game on the server.
+# $Balance***                          //Checks the current _balance/cash the _player has.
+# $Age***                              //Checks the _age for the current _player.
+# $Assets***                           //Shows the ratio and breakdown of the players' assets.
 # $Projection                       //Projects the possible future state of the players' assets.
-# $Portfolio [#]                    //Invest balance into asset allocation.
+# $Portfolio [#]***                    //Invest _balance into asset allocation.
 
 # CSV, parsing Returns for projection.
-# 9 different CSV's, 1 for each Asset Type.
+# 7 different CSV's, 1 for each Asset Type.
 #
 
 # Gameplay
-# Constant for when the person dies.
-# Variable for bank balance; accumulation per turn.
+# Var/Constant for when the person dies.
+# Variable for bank _balance; accumulation per turn.
 # Constant for inflation.
 # PrevDictionary (Balance, + 9 AssetTypes, Age)
 # CurrDictionary (Balance, + 9 AssetTypes, Age)
 #Gameplay
     #Constant for when the person dies.
-    #Variable for bank balance; accumulation per turn.
+    #Variable for bank _balance; accumulation per turn.
     #Constant for inflation.
     #PrevDictionary (Balance, + 9 AssetTypes, Age)
     #CurrDictionary (Balance, + 9 AssetTypes, Age)
 
-
 import random
 
-
-
-class Player:  # Each player has their own gameInstance object created when calling $start
+class Simulation:
+    """Each _player has their own game object created when calling '$start'
+    """
 
     ADMIN_LIST = {'Burbot#5573', 'ColdBrewOnNitroStat#4666', 'Lucas J#3567', '24karatsunshine#7559'} #List stored as Set, Set is pretty much better/efficient list if order does not matter.
+
     PORTFOLIO_PRESET = [
-        (0.05, 0.25, 0.25, 0.20, 0.10, 0.10, 0.05, 0.00, 0.00),  ## Portfolio 1 - A little bit of everything
-        (0.00, 0.00, 0.00, 0.34, 0.33, 0.00, 0.00, 0.33, 0.00),  ## Portfolio 2 - The Boglehead
-        (0.00, 0.00, 0.00, 0.25, 0.25, 0.25, 0.25, 0.00, 0.00),  ## Portfolio 3 - The Dave Ramsey
-        (0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 1.00),  ## Portfolio 4 - Old School Pension Plan
-        (0.00, 0.00, 0.00, 1.00, 0.00, 0.00, 0.00, 0.00, 0.00),  ## Portfolio 5 - You only live once
-        (1.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00),  ## Portfolio 6 - The Shoebox
-    ]
+        (1.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00)   ## Portfolio 0 - Default: All cash; no investments.
+        (0.00, 0.05, 0.25, 0.25, 0.20, 0.10, 0.10, 0.05),  ## Portfolio 1 - A little bit of everything
+        (0.00, 0.00, 0.22, 0.11, 0.34, 0.33, 0.00, 0.00),  ## Portfolio 2 - The Boglehead
+        (0.00, 0.00, 0.00, 0.00, 0.25, 0.25, 0.25, 0.25),  ## Portfolio 3 - The Dave Ramsey
+        (0.00, 0.00, 0.87, 0.13, 0.00, 0.00, 0.00, 0.00),  ## Portfolio 4 - Old School Pension Plan
+        (0.00, 0.00, 0.00, 0.00, 1.00, 0.00, 0.00, 0.00),  ## Portfolio 5 - You only live once
+        (0.00, 1.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00)]  ## Portfolio 6 - The Shoebox
+    """The portfolio preset variable contains different sets of asset distribution. Values in the set should add up to 1.00 or 100%."""
 
-    def __init__(self, name, age=18):  # __init__ is a object method that python automatically runs, when the
+    def __init__(self, player_name):
+        self._reset(player_name)
+
+    def _reset(self, name, age=18):  # __init__ is a object method that python automatically runs, when the
         # instance/object is initialized/created
-        self.world_seed = self.get_seed() # Initializes the player with a randomly selected projection of how each asset varies per year
-        self.AGGR = self.world_seed[0]  # Call the model for each asset type (stored in a list).
-        self.INTT = self.world_seed[1]
-        self.LTCORP = self.world_seed[2]
-        self.MONEYY = self.world_seed[3]
-        self.INTGOV = self.world_seed[4]
-        self.US = self.world_seed[5]
-        self.SMALL = self.world_seed[6]
+        self._world_seed = self._get_seed() # Initializes the _player with a randomly selected projection of how each asset varies per year
+        """The _world_seed private data member stores all the asset type models in the current game."""
+        self.AGGR_list = self._world_seed[0]  # Call the model for each asset type (stored in a list).
+        self.INTT_list = self._world_seed[1]
+        self.LTCORP_list = self._world_seed[2]
+        self.MONEYY_list = self._world_seed[3]
+        self.INTGOV_list = self._world_seed[4]
+        self.US_list = self._world_seed[5]
+        self.SMALL_list = self._world_seed[6]
+        """Parsing the _world_seed private data member into the respective asset model variables. Each asset variable list contains incrementing values that determine the asset success for different years """
 
-        self.current_AGGR = 1   # The incrementing methods, all start at 1, the next method increments to the next value in each list.
-        self.current_INTT = 1
-        self.current_LTCORP = 1
-        self.current_MONEYY = 1
-        self.current_INTGOV = 1
-        self.current_US = 1
-        self.current_SMALL = 1
+        # The following are all the private data members related to the player specifically.
+        self._player = name # Name of the player
+        self._balance = 100000  # Replace this with whatever the starting _balance is.
+        self._age = age  # By default, this will be 18 unless the parameter is overwritten
+        self._turns = 0 # Keeps track of the turns elapsed, first turn is 0. This also serves as the index to calculate different asset models.
 
+        self._player_assets = [self._balance, 0, 0, 0, 0, 0, 0, 0]
+        self._current_allocations = Simulation.PORTFOLIO_PRESET[0]
 
-        self.user = name
-        self.balance = 100000  # Replace this with whatever the starting balance is.
-        self.age = age  # By default, this will be 18 unless the parameter is overwritten
-        self.turns = 0
-        self.allocations = None  # Text representation of percentage invested in each allocation type
+        self._asset_distributions = None """This is to initialize the temporary variable used during the next() function."""
+        self._allocation_repr = f"CASH: 100%, MONEY: 0%, ITGVT:" \
+                                f" 0%, LTCORP_list: 0%," \
+                                f" Equity US_list: 0%, INT:" \
+                                f" 0%, SMALL_list: 0%, " \
+                                f"AGGR_list: 0%, FIXED:" \
+                                f" 0%, BALANCED: 0%"
 
-        self.current_assets = {
-            "AGGR" : self.current_AGGR
-        }      #Storing all of the player's data as key:pair dictionary format. Setting to empty one to begin with.
-        self._previous_assets = dict()     #Storing all of the player's data as key:pair dictionary format. Setting to empty one to begin with.
-        self._current_allocations = tuple()     #9 asset types stored as tuple (a list that you cant edit individual values, more efficient), 9 different decimal values, for example: [0.05, 0.10, 0.10, 0.7, 0.8, 0.25, 0.10, 0.05, 0.15, 0.05]  => 5% ASSET A, 10% in ASSET B, etc...
+        """There are 7 asset types, by default the starting allocations are set to portfolio 0."""
 
         # values, more efficient), 9 different decimal values, for example:
         # [0.05, 0.10, 0.10, 0.7, 0.8, 0.25, 0.10, 0.05, 0.15, 0.05]  => 5% ASSET A, 10% in ASSET B, etc...
 
-        self._is_admin = self._is_admin_check()  # Boolean; states whether or not the player have admin privileges,
-        # uses function to check if the player's name is in the class list of admins.
+        self._is_admin = self._is_admin_check()  # Boolean; states whether or not the _player have admin privileges,
+        # uses function to check if the _player's name is in the class list of admins.
 
-    def __repr__(self) -> str:  # __Repr__ is a method that tells python, what displays when you print or call
+    def get_player(self):  # __Repr__ is a method that tells python, what displays when you print or call
         # the object directly.
-        return self.user
+        return self._player
+
+    def get_player(self):  # __Repr__ is a method that tells python, what displays when you print or call
+        # the object directly.
+        return self._age
 
     def _is_admin_check(self):
-        return self.user in Player.ADMIN_LIST  # Returns True if the player
+        return self._player in Simulation.ADMIN_LIST  # Returns True if the _player
 
-    def _game_over(self):  # This function will run to cleanup and reset game. As well as update leaderboard data.
-        pass
-
-    def portfolio(self, preset_number):  # Bot command $Portfolio [#] would run this
-        index = preset_number - 1  # Python uses Based 0 index, but we want to let users start from Index of 1.
-        # So accounting internally.
-        self._current_allocations = Player.PORTFOLIO_PRESET[index]
+    def get_portfolio(self, preset_choice):  # Bot command $Portfolio [#] would run this
+        self._current_allocations = Simulation.PORTFOLIO_PRESET[index]
         print("Portfolio Successfully Changed.")
-        self.allocations = f"MONEY: {self._current_allocations[0] * 100}%, ITGVT:" \
-                           f" {self._current_allocations[1] * 100}%, LTCORP: {self._current_allocations[2] * 100}%," \
-                           f" Equity US: {self._current_allocations[3] * 100}%, INT:" \
-                           f" {self._current_allocations[4] * 100}%, SMALL: {self._current_allocations[5] * 100}%, " \
-                           f"AGGR: {self._current_allocations[6] * 100}%, FIXED:" \
+        self._allocation_repr = f"CASH: {self_current_allocations[0]}%, MONEY: {self._current_allocations[1] * 100}%, ITGVT:" \
+                           f" {self._current_allocations[2] * 100}%, LTCORP_list: {self._current_allocations[3] * 100}%," \
+                           f" Equity US_list: {self._current_allocations[4] * 100}%, INT:" \
+                           f" {self._current_allocations[5] * 100}%, SMALL_list: {self._current_allocations[6] * 100}%, " \
+                           f"AGGR_list: {self._current_allocations[6] * 100}%, FIXED:" \
                            f" {self._current_allocations[7] * 100}%, BALANCED: {self._current_allocations[8] * 100}%"
+        return self._allocation_repr
+
+    def get_balance(self):
+        return self._balance
 
     def help(self): #This function is used for the $help command to find out the bot commands.
         pass
 
-    def get_seed(self):
+    def _get_seed(self):
 
         """ A function that picks randomly selected world parameters for asset classes through time."""
 
@@ -116,7 +123,7 @@ class Player:  # Each player has their own gameInstance object created when call
 
         random_int = random.randint(0, 10000)
 
-        asset_list = ["AGGR", "INT", "INTGOV", "LTCORP", "MONEY", "SMALL", "US"]
+        asset_list = ["AGGR_list", "INT", "INTGOV_list", "LTCORP_list", "MONEY", "SMALL_list", "US_list"]
         asset_models = []
         for asset in asset_list:
             asset = asset
@@ -142,43 +149,46 @@ class Player:  # Each player has their own gameInstance object created when call
         return player_models
 
     def next(self):
-        # Increment age, increment the turn
-        self.turns += 1
-        self.age += 1
-        if self.age >= 60:
-            self._game_over()
+        # Increment _age, increment the turn
+        if self._age >= 60:
+            print({"Game over! You died at the age of 60."})
+            self._reset()
         # Change the value in each asset list to the next value
-        self.current_AGGR = self.AGGR[self.turns]
-        self.current_INTT = self.INTT[self.turns]
-        self.current_LTCORP = self.LTCORP[self.turns]
-        self.current_MONEYY = self.MONEYY[self.turns]
-        self.current_INTGOV = self.INTGOV[self.turns]
-        self.current_US = self.US[self.turns]
-        self.current_SMALL = self.SMALL[self.turns]
-        # Set current asset dict to current asset values
-        New = {"AGGR" : self.current_AGGR}
-        self.current_assets.update(New)
-        return self.current_AGGR, self.current_INTT, self.current_LTCORP, self.current_MONEYY, self.current_INTGOV, self.current_US, self.current_SMALL, self.current_assets
+        """Take the player balance, distribute it accordingly to the how much they want to put into each asset type. Take each asset type and multiply it by the modifier of each model (which is determined by current minus previous)."""
+        self._asset_distributions = [self._balance * asset for asset in self._current_allocations]
+        self._asset_multipliers = [1, (self.AGGR_list[self._turns+1] - self.AGGR_list[self._turns]),
+                                   self.INTT_list[self._turns+1] -self.INTT_list[self._turns],
+                                   self.LTCORP_list[self._turns + 1] - self.LTCORP_list[self._turns],
+                                   self.MONEYY_list[self._turns + 1] - self.MONEYY_list[self._turns],
+                                   self.INTGOV_list[self._turns + 1] - self.INTGOV_list[self._turns],
+                                   self.US_list[self._turns + 1] - self.US_list[self._turns],
+                                   self.SMALL_list[self._turns + 1] - self.SMALL_list[self._turns]
+        ]
+        self._asset_distributions = [a * b for a, b in zip(self._asset_distributions, self._asset_multipliers)] #Takes the player's dsitributions and multiply by the respective asset multipliers as generated by the models.
+        self._balance = sum(self._asset_distributions) # Recalculates the player monetary balance by summing up all of the player's assets.
+
+        self._turns += 1
+        self._age += 1
 
 
         # Functions properly, just a bit ugly (F strings? A loop?). Need to incorporate math next.
 
 # Examples / Tests
 
-Jerrod = Player(
+Jerrod = Simulation(
     'Burbot#5573')  # We want the bot to execute this function ; creating the
-# player's object using discord name when they type !start
+# _player's object using discord name when they type !start
 print(Jerrod)  # Returns -> 'Burbot#5573'
-print(Jerrod.balance)  # Returns -> '100000'
-print(Jerrod.AGGR)
-print(Jerrod.current_AGGR)
-print(Jerrod.current_assets)
+print(Jerrod._balance)  # Returns -> '100000'
+print(Jerrod.AGGR_list)
+print(Jerrod.AGGR_index)
+print(Jerrod._player_assets)
 Jerrod.next()
-print(Jerrod.current_AGGR)
+print(Jerrod.AGGR_index)
 Jerrod.next()
-print(Jerrod.current_AGGR)
+print(Jerrod.AGGR_index)
 Jerrod.next()
 Jerrod.next()
 Jerrod.next()
-print(Jerrod.current_AGGR)
-print(Jerrod.current_assets)
+print(Jerrod.AGGR_index)
+print(Jerrod._player_assets)

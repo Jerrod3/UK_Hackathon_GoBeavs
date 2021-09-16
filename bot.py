@@ -16,7 +16,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    if message.author == client.user:
+    if message.author == client._player:
         return
 
     if message.content.startswith('$hello'):
