@@ -37,7 +37,7 @@ class Simulation:
     ADMIN_LIST = {'Burbot#5573', 'ColdBrewOnNitroStat#4666', 'Lucas J#3567', '24karatsunshine#7559'} #List stored as Set, Set is pretty much better/efficient list if order does not matter.
 
     PORTFOLIO_PRESET = [
-        (1.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00)   ## Portfolio 0 - Default: All cash; no investments.
+        (1.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00),   ## Portfolio 0 - Default: All cash; no investments.
         (0.00, 0.05, 0.25, 0.25, 0.20, 0.10, 0.10, 0.05),  ## Portfolio 1 - A little bit of everything
         (0.00, 0.00, 0.22, 0.11, 0.34, 0.33, 0.00, 0.00),  ## Portfolio 2 - The Boglehead
         (0.00, 0.00, 0.00, 0.00, 0.25, 0.25, 0.25, 0.25),  ## Portfolio 3 - The Dave Ramsey
@@ -69,9 +69,10 @@ class Simulation:
         self._turns = 0 # Keeps track of the turns elapsed, first turn is 0. This also serves as the index to calculate different asset models.
 
         self._player_assets = [self._balance, 0, 0, 0, 0, 0, 0, 0]
-        self._current_allocations = Simulation.PORTFOLIO_PRESET[0]
+        self._current_allocations = Simulation.PORTFOLIO_PRESET[1]
 
-        self._asset_distributions = None """This is to initialize the temporary variable used during the next() function."""
+        self._asset_distributions = None
+
         self._allocation_repr = f"CASH: 100%, MONEY: 0%, ITGVT:" \
                                 f" 0%, LTCORP_list: 0%," \
                                 f" Equity US_list: 0%, INT:" \
@@ -87,12 +88,10 @@ class Simulation:
         self._is_admin = self._is_admin_check()  # Boolean; states whether or not the _player have admin privileges,
         # uses function to check if the _player's name is in the class list of admins.
 
-    def get_player(self):  # __Repr__ is a method that tells python, what displays when you print or call
-        # the object directly.
+    def get_player_name(self):
         return self._player
 
-    def get_player(self):  # __Repr__ is a method that tells python, what displays when you print or call
-        # the object directly.
+    def get_player_age(self):
         return self._age
 
     def _is_admin_check(self):
@@ -123,10 +122,9 @@ class Simulation:
 
         random_int = random.randint(0, 10000)
 
-        asset_list = ["AGGR_list", "INT", "INTGOV_list", "LTCORP_list", "MONEY", "SMALL_list", "US_list"]
+        asset_list = ["AGGR", "INT", "INTGOV", "LTCORP", "MONEY", "SMALL", "US"]
         asset_models = []
         for asset in asset_list:
-            asset = asset
             fh = open(f"{asset}.csv")
             models_lst = []
             for line in fh:
@@ -153,42 +151,37 @@ class Simulation:
         if self._age >= 60:
             print({"Game over! You died at the age of 60."})
             self._reset()
-        # Change the value in each asset list to the next value
         """Take the player balance, distribute it accordingly to the how much they want to put into each asset type. Take each asset type and multiply it by the modifier of each model (which is determined by current minus previous)."""
         self._asset_distributions = [self._balance * asset for asset in self._current_allocations]
-        self._asset_multipliers = [1, (self.AGGR_list[self._turns+1] - self.AGGR_list[self._turns]),
-                                   self.INTT_list[self._turns+1] -self.INTT_list[self._turns],
-                                   self.LTCORP_list[self._turns + 1] - self.LTCORP_list[self._turns],
-                                   self.MONEYY_list[self._turns + 1] - self.MONEYY_list[self._turns],
-                                   self.INTGOV_list[self._turns + 1] - self.INTGOV_list[self._turns],
-                                   self.US_list[self._turns + 1] - self.US_list[self._turns],
-                                   self.SMALL_list[self._turns + 1] - self.SMALL_list[self._turns]
+        print(self._asset_distributions)
+        self._asset_multipliers = [1, (float(self.AGGR_list[self._turns+1]) - float(self.AGGR_list[self._turns]) + 1),
+                                   (float(self.INTT_list[self._turns+1]) - float(self.INTT_list[self._turns]) + 1),
+                                   (float(self.LTCORP_list[self._turns + 1]) - float(self.LTCORP_list[self._turns]) + 1),
+                                   (float(self.MONEYY_list[self._turns + 1]) - float(self.MONEYY_list[self._turns]) + 1),
+                                   (float(self.INTGOV_list[self._turns + 1]) - float(self.INTGOV_list[self._turns]) + 1),
+                                   (float(self.US_list[self._turns + 1]) - float(self.US_list[self._turns]) + 1),
+                                   (float(self.SMALL_list[self._turns + 1]) - float(self.SMALL_list[self._turns]) + 1)
         ]
-        self._asset_distributions = [a * b for a, b in zip(self._asset_distributions, self._asset_multipliers)] #Takes the player's dsitributions and multiply by the respective asset multipliers as generated by the models.
+        print(self._asset_multipliers)
+        self._asset_distributions = [a * b for a, b in zip(self._asset_distributions, self._asset_multipliers)] #Takes the player's distributions and multiply by the respective asset multipliers as generated by the models.
+        print(self._asset_distributions)
         self._balance = sum(self._asset_distributions) # Recalculates the player monetary balance by summing up all of the player's assets.
-
+        print(self._balance)
         self._turns += 1
         self._age += 1
-
-
-        # Functions properly, just a bit ugly (F strings? A loop?). Need to incorporate math next.
 
 # Examples / Tests
 
 Jerrod = Simulation(
     'Burbot#5573')  # We want the bot to execute this function ; creating the
 # _player's object using discord name when they type !start
-print(Jerrod)  # Returns -> 'Burbot#5573'
-print(Jerrod._balance)  # Returns -> '100000'
-print(Jerrod.AGGR_list)
-print(Jerrod.AGGR_index)
 print(Jerrod._player_assets)
 Jerrod.next()
-print(Jerrod.AGGR_index)
-Jerrod.next()
-print(Jerrod.AGGR_index)
-Jerrod.next()
-Jerrod.next()
-Jerrod.next()
-print(Jerrod.AGGR_index)
 print(Jerrod._player_assets)
+Jerrod.next()
+print(Jerrod._player_assets)
+Jerrod.next()
+print(Jerrod._player_assets)
+Jerrod.next()
+print(Jerrod._player_assets)
+Jerrod.next()
